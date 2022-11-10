@@ -46,7 +46,8 @@ bool PWRKEY_CheckPwrOn(void)
 	bool isPwrOn = false;
 	int delayCh;
 
-	LPTMRMANAGE_GetDelayAvailableChannel(&delayCh);	/* find available channel */
+//	LPTMRMANAGE_GetDelayAvailableChannel(&delayCh);	/* find available channel */
+	delayCh = LPTMRMANAGE_SetDelayTime();
 	if(delayCh >= 0)
 	{
 		lptmrManage.delay.chSet[delayCh].matchCnt = PWRKEY_MATCH_TIME;				/* set delay time */

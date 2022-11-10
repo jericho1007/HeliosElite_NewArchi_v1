@@ -77,3 +77,15 @@ void LPTMRMANAGE_GetDelayAvailableChannel(int *regCh)
 	}
 }
 
+int LPTMRMANAGE_SetDelayTime(uint8_t ch, uint32_t time)
+{
+	int channel = -1;
+
+	if(LPTMRMANAGE_GetDelayAvailableChannel(&channel))
+	{
+		lptmrManage.delay.chSet[channel].matchCnt = time;	/* set delay time */
+	}
+
+	return channel;
+}
+

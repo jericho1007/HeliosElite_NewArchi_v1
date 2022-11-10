@@ -23,7 +23,7 @@
 #include "fsl_common.h"
 #include "driver_timer.h"
 #include "app_lptmr_manage.h"
-#include "app_tpmtmr_manage.h";
+#include "app_tpmtmr_manage.h"
 #include "app_io_pwr_key.h"
 
 /*! *********************************************************************************

@@ -50,6 +50,7 @@ typedef struct _lptmr_manage {
 void LPTMRMANAGE_Init(void);
 void LPTMRMANAGE_CallBack(void);
 void LPTMRMANAGE_GetDelayAvailableChannel(int *regCh);
+int LPTMRMANAGE_SetDelayTime(uint8_t ch, uint32_t time);
 
 /*******************************************************************************
  * Variables
