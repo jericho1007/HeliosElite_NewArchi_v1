@@ -25,6 +25,15 @@
 #include "app_lptmr_manage.h"
 #include "app_tpmtmr_manage.h"
 #include "app_io_pwr_key.h"
+#include "driver_wdt.h"
+#include "driver_nvm.h"
+#include "core_para_list.h"
+#include "core_dictionary.h"
+#include "core_task_console.h"
+#include "driver_sleep.h"
+#include "app_sys_pwr.h"
+#include "app_io_kp_ctrl.h"
+#include "app_io_back_light.h"
 
 /*! *********************************************************************************
 *************************************************************************************
@@ -85,9 +94,9 @@ static void* osObjectAlloc(const osObjectInfo_t* pOsObjectInfo);
 static bool_t osObjectIsAllocated(const osObjectInfo_t* pOsObjectInfo, void* pObjectStruct);
 static osaStatus_t osObjectFree(const osObjectInfo_t* pOsObjectInfo, void* pObjectStruct);
 #endif
-extern void main_task(void const *argument);
+extern void TASKBLE_CoreBody(void const *argument);
 extern void hardware_init(void);
-void startup_task(void* argument);
+void TASKBLE_Body(void* argument);
 
 /*! *********************************************************************************
 *************************************************************************************
@@ -122,9 +131,9 @@ static const osObjectInfo_t osEventInfo = {osEventHeap, sizeof(osEventStruct_t),
  * Description   : Wrapper over main_task..
  *
  *END**************************************************************************/
-void startup_task(void* argument)
+void TASKBLE_Body(void* argument)
 {
-    main_task((osaTaskParam_t) argument);
+	TASKBLE_CoreBody((osaTaskParam_t) argument);
     while(TRUE)
     {
     }
@@ -1020,22 +1029,42 @@ void OSA_InstallIntHandler(uint32_t IRQNumber, void (*handler)(void))
 * Private functions
 *************************************************************************************
 ********************************************************************************** */
-static OSA_TASK_DEFINE(startup_task, gMainThreadPriority_c, 1, gMainThreadStackSize_c, 0)  ;
+static OSA_TASK_DEFINE(TASKBLE_Body, 	9, 1, gMainThreadStackSize_c, 0);
+static OSA_TASK_DEFINE(TSKCON_Body, 	8, 1, gMainThreadStackSize_c, 0);
 void main (void)
 {
-	/* initial sleep which must be first */
-	/* feed WDT avoid trigger timeout */
+	SLEEP_Init();	/* initial sleep which must be first */
+#if SYS_WDT_ENABLE
+	WDT_Feed();		/* feed WDT avoid trigger timeout */
+#endif
 	TIMER_Init(LPTMRMANAGE_CallBack, TPMMANAGE_CallBack);		/* timer middle driver */
-	LPTMRMANAGE_Init();	/* low power APP */
+	LPTMRMANAGE_Init();	/* low power timer */
 	PWRKEY_Init();		/* initial power key */
 	if(!PWRKEY_CheckPwrOn())
 	{
-		/* enter sleep mode */
+		SYSPWR_EnterPwrDown();	/* enter sleep mode */
 	}
-
     hardware_init();	 /* Initialize MCU clock */
 
-    (void)OSA_TaskCreate(OSA_TASK(startup_task), NULL);
+    BKLIGHT_Init();
+    BKLIGHT_SetPwr(kbacklight_power_on);
+    while(1) {
+    	SYSPWR_EnterPwrDown();	/* enter sleep mode */
+    }
+    /**********************************************************************
+    	 * Basic driver initial
+	 *********************************************************************/
+    NVM_Init();
+
+    /**********************************************************************
+	 * System information initial
+	 *********************************************************************/
+    PLIST_Init();
+    CORE_InitDictionary();
+
+
+    (void)OSA_TaskCreate(OSA_TASK(TASKBLE_Body), NULL);
+    (void)OSA_TaskCreate(OSA_TASK(TSKCON_Body), NULL);
 
     vTaskStartScheduler();
 }
@@ -1156,4 +1185,3 @@ void vApplicationMallocFailedHook (void)
     panic(0,(uint32_t)vApplicationMallocFailedHook,0,0);
 }
 #endif
-

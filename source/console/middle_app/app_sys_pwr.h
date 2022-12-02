@@ -1,12 +1,12 @@
 /*
- * public.h
+ * app_sys_pwr.h
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月30日
  *      Author: JerichoLo
  */
 
-#ifndef CONSOLE_PUBLIC_H_
-#define CONSOLE_PUBLIC_H_
+#ifndef CONSOLE_MIDDLE_APP_APP_SYS_PWR_H_
+#define CONSOLE_MIDDLE_APP_APP_SYS_PWR_H_
 #include "stdio.h"
 #include "stdint.h"
 #include "stdbool.h"
@@ -15,18 +15,15 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-typedef enum io_level {
-	kio_level_low = 0,
-	kio_level_high,
-}io_level_t;
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-void PUBLIC_SwapU32Data(uint8_t *srcData);
+void SYSPWR_EnterPwrDown(void);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-#endif /* CONSOLE_PUBLIC_H_ */
+
+#endif /* CONSOLE_MIDDLE_APP_APP_SYS_PWR_H_ */

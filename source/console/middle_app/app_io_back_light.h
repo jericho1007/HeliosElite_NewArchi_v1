@@ -19,10 +19,16 @@
 #define BACK_LIGHT_IO_GPIO		GPIOB
 #define BACK_LIGHTL_IO_PIN		2
 
+typedef enum _backlight_power {
+	kbacklight_power_off = 0,
+	kbacklight_power_on
+}backlight_state_t;
+
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
 void BKLIGHT_Init(void);
+void BKLIGHT_SetPwr(backlight_state_t state);
 
 /*******************************************************************************
  * Variables

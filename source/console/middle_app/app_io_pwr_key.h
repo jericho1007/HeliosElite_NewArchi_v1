@@ -24,5 +24,6 @@
  ******************************************************************************/
 void PWRKEY_Init(void);
 bool PWRKEY_CheckPwrOn(void);
+void PWRKEY_CheckKeyReleased(void);
 
 #endif /* CONSOLE_MIDDLE_APP_APP_IO_PWR_KEY_H_ */

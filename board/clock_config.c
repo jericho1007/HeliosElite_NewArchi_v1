@@ -44,13 +44,14 @@ processor_version: 8.0.0
 /* clang-format on */
 
 #include "clock_config.h"
+#include "driver_sleep.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define MCG_IRCLK_DISABLE                                 0U  /*!< MCGIRCLK disabled */
+#define MCG_IRCLK_DISABLE                                 SLEEP_MCG_IRCLK_DISABLE  /*!< MCGIRCLK disabled */
 #define SIM_LPUART_CLK_SEL_OSCERCLK_CLK                   2U  /*!< LPUART clock select: OSCERCLK clock */
-#define SIM_OSC32KSEL_OSC32KCLK_CLK                       0U  /*!< OSC32KSEL select: OSC32KCLK clock */
+#define SIM_OSC32KSEL_OSC32KCLK_CLK                       SLEEP_SIM_OSC32KSEL_OSC32KCLK_CLK  /*!< OSC32KSEL select: OSC32KCLK clock */
 #define SIM_TPM_CLK_SEL_OSCERCLK_CLK                      2U  /*!< TPM clock select: OSCERCLK clock */
 
 /*******************************************************************************

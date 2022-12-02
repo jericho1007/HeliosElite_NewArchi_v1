@@ -20,6 +20,8 @@
 #define LPTMR_MANAGE_WATCH_TOTAL_CHANNELS		10
 #define LPTMR_MANAGE_TIME_INTERVAL				10 /* unit:10ms, must match low power base driver config */
 
+#define LPTMR_MANAGE_WATCH_PWR_ON_CHECK_CH		0
+
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
@@ -28,7 +30,7 @@ typedef enum _lptmr_delay_ch {
 }_lptmr_delay_ch_t;
 
 typedef enum _lptmr_watch_ch {
-	lptmr_watch_ch_sleep = 0,
+	lptmr_watch_ch_sleep = 0,	/* share with power on check */
 }lptmr_watch_ch_t;
 
 typedef struct _lptmr_manage {
@@ -41,7 +43,10 @@ typedef struct _lptmr_manage {
 
 	union {
 		struct {
-			tmr_model_state_t sleep;
+			union {
+				tmr_model_state_t sleep;
+				tmr_model_state_t powerOnCheck;
+			};
 		}ch;
 		tmr_model_state_t chSet[LPTMR_MANAGE_WATCH_TOTAL_CHANNELS];
 	}watch;
@@ -50,7 +55,7 @@ typedef struct _lptmr_manage {
 void LPTMRMANAGE_Init(void);
 void LPTMRMANAGE_CallBack(void);
 void LPTMRMANAGE_GetDelayAvailableChannel(int *regCh);
-int LPTMRMANAGE_SetDelayTime(uint8_t ch, uint32_t time);
+int LPTMRMANAGE_SetDelayTime(uint32_t time);
 
 /*******************************************************************************
  * Variables

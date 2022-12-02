@@ -67,6 +67,7 @@
 #if defined(gUseControllerNotificationsCallback_c) && (gUseControllerNotificationsCallback_c)
     #include "controller_interface.h"
 #endif
+#include "mask_evb_config.h"
 
 /************************************************************************************
  *************************************************************************************
@@ -354,8 +355,10 @@ void BleApp_HandleKeys(key_event_t events)
                                              SwitchPressTimerCallback, NULL);
             }
 #else
+#if !MASK_EVB_LED_FN
             LED_StopFlashingAllLeds();
             Led1Flashing();
+#endif
             BleApp_Start(mGapRole);
 #endif
             break;
@@ -602,18 +605,20 @@ static void BleApp_ScanningCallback(gapScanningEvent_t *pScanningEvent)
                                              gTmrLowPowerSecondTimer_c,
                                              TmrSeconds(gScanningTime_c),
                                              ScanningTimerCallback, NULL);
-
+#if !MASK_EVB_LED_FN
                 Led1Flashing();
+#endif
             }
             /* Node is not scanning */
             else
             {
                 (void)TMR_StopTimer(mAppTimerId);
-
+#if !MASK_EVB_LED_FN
                 Led1Flashing();
                 Led2Flashing();
                 Led3Flashing();
                 Led4Flashing();
+#endif
             }
         }
         break;
@@ -646,6 +651,7 @@ static void BleApp_AdvertisingCallback(gapAdvertisingEvent_t *pAdvertisingEvent)
         case gAdvertisingStateChanged_c:
         {
             mAdvState.advOn = !mAdvState.advOn;
+#if !MASK_EVB_LED_FN
             LED_StopFlashingAllLeds();
             Led1Flashing();
 
@@ -655,6 +661,7 @@ static void BleApp_AdvertisingCallback(gapAdvertisingEvent_t *pAdvertisingEvent)
                 Led3Flashing();
                 Led4Flashing();
             }
+#endif
         }
         break;
 
@@ -698,9 +705,10 @@ static void BleApp_ConnectionCallback(deviceId_t peerDeviceId, gapConnectionEven
             (void)Bas_Subscribe(&mBasServiceConfig, peerDeviceId);
 
             /* UI */
+#if !MASK_EVB_LED_FN
             LED_StopFlashingAllLeds();
             Led1On();
-
+#endif
             /* Stop Advertising Timer*/
             (void)TMR_StopTimer(mAppTimerId);
 
@@ -780,8 +788,10 @@ static void BleApp_ConnectionCallback(deviceId_t peerDeviceId, gapConnectionEven
             BleServDisc_Stop(peerDeviceId);
 
             /* UI */
+#if !MASK_EVB_LED_FN
             LED_TurnOffAllLeds();
             LED_StartFlash(LED_ALL);
+#endif
 
             /* mark device id as invalid */
             maPeerInformation[peerDeviceId].deviceId = gInvalidDeviceId_c;

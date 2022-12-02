@@ -1,12 +1,12 @@
 /*
- * public.h
+ * core_task_console.h
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月30日
  *      Author: JerichoLo
  */
 
-#ifndef CONSOLE_PUBLIC_H_
-#define CONSOLE_PUBLIC_H_
+#ifndef CONSOLE_CORE_CORE_TASK_CONSOLE_H_
+#define CONSOLE_CORE_CORE_TASK_CONSOLE_H_
 #include "stdio.h"
 #include "stdint.h"
 #include "stdbool.h"
@@ -15,18 +15,18 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-typedef enum io_level {
-	kio_level_low = 0,
-	kio_level_high,
-}io_level_t;
+typedef struct _core_task_console {
+	uint8_t taskDelayTime;
+}core_task_console_t;
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-void PUBLIC_SwapU32Data(uint8_t *srcData);
+void TSKCON_Body(void* argument);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
+extern core_task_console_t taskConsoleManage;
 
-#endif /* CONSOLE_PUBLIC_H_ */
+#endif /* CONSOLE_CORE_CORE_TASK_CONSOLE_H_ */

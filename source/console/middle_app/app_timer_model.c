@@ -43,7 +43,7 @@ bool TMRMDL_IsTmrChannelStart(tmr_model_state_t *ch)
 	return result;
 }
 
-bool TMR_IsTmrChannelTimeout(tmr_model_state_t *ch)
+bool TMRMDL_IsTmrChannelTimeout(tmr_model_state_t *ch)
 {
 	bool result = false;
 
@@ -55,12 +55,12 @@ bool TMR_IsTmrChannelTimeout(tmr_model_state_t *ch)
 	return result;
 }
 
-void TMR_SetTmrChannelTimeout(tmr_model_state_t *ch)
+void TMRMDL_SetTmrChannelTimeout(tmr_model_state_t *ch)
 {
 	ch->ctrl |= TMR_MODEL_BIT_TIMEOUT_MASK;
 }
 
-void TMR_ClearTmrChannelTimeout(tmr_model_state_t *ch)
+void TMRMDL_ClearTmrChannelTimeout(tmr_model_state_t *ch)
 {
 	ch->ctrl &= (~TMR_MODEL_BIT_TIMEOUT_MASK);
 }

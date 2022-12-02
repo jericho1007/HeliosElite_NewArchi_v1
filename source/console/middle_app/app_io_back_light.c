@@ -33,10 +33,21 @@ static void BKLIGHT_PinMux(void)
 
 void BKLIGHT_Init(void)
 {
-	gpio_pin_config_t pinConfig = {.pinDirection = kGPIO_DigitalOutput, .outputLogic = kio_level_high};
+	gpio_pin_config_t pinConfig = {.pinDirection = kGPIO_DigitalOutput, .outputLogic = kio_level_low};
 
 	BKLIGHT_PinMux();
 	GPIO_PinInit(BACK_LIGHT_IO_GPIO, BACK_LIGHTL_IO_PIN, &pinConfig);
+}
+
+void BKLIGHT_SetPwr(backlight_state_t state)
+{
+	/* KP pin is low active */
+	io_level_t lv = kio_level_low;
+	if(state == kbacklight_power_on)
+	{
+		lv = kio_level_high;
+	}
+	GPIO_PinWrite(BACK_LIGHT_IO_GPIO, BACK_LIGHTL_IO_PIN, lv);
 }
 
 

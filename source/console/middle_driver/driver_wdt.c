@@ -1,32 +1,39 @@
 /*
- * public.h
+ * driver_wdt.c
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月23日
  *      Author: JerichoLo
  */
-
-#ifndef CONSOLE_PUBLIC_H_
-#define CONSOLE_PUBLIC_H_
-#include "stdio.h"
-#include "stdint.h"
-#include "stdbool.h"
-#include "string.h"
+#include "driver_wdt.h"
+#include "MKW38A4.h"
+#include "fsl_cop.h"
+#include "fsl_rcm.h"
+#include "portmacro.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-typedef enum io_level {
-	kio_level_low = 0,
-	kio_level_high,
-}io_level_t;
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-void PUBLIC_SwapU32Data(uint8_t *srcData);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-#endif /* CONSOLE_PUBLIC_H_ */
+/*******************************************************************************
+ * Code
+ ******************************************************************************/
+void WDT_Init(void)
+{
+	cop_config_t stConfigCop;
+	COP_GetDefaultConfig(&stConfigCop);
+	stConfigCop.timeoutMode = kCOP_ShortTimeoutMode;
+	COP_Init(SIM, &stConfigCop);
+}
+
+void WDT_Feed(void)
+{
+	COP_Refresh(SIM);
+}

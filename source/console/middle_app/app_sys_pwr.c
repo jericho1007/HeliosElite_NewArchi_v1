@@ -1,32 +1,33 @@
 /*
- * public.h
+ * app_sys_pwr.c
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月30日
  *      Author: JerichoLo
  */
-
-#ifndef CONSOLE_PUBLIC_H_
-#define CONSOLE_PUBLIC_H_
-#include "stdio.h"
-#include "stdint.h"
-#include "stdbool.h"
-#include "string.h"
+#include "app_sys_pwr.h"
+#include "driver_sleep.h"
+#include "bike_config.h"
+#include "driver_wdt.h"
+#include "app_io_pwr_key.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-typedef enum io_level {
-	kio_level_low = 0,
-	kio_level_high,
-}io_level_t;
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-void PUBLIC_SwapU32Data(uint8_t *srcData);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-#endif /* CONSOLE_PUBLIC_H_ */
+/*******************************************************************************
+ * Code
+ ******************************************************************************/
+void SYSPWR_EnterPwrDown(void)
+{
+
+	PWRKEY_CheckKeyReleased();
+	SLEEP_EnterPowerDnMode(kPWR_PowerModeVlls1);	/* enter power down sleep */
+}

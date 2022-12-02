@@ -1,52 +1,41 @@
 /*
- * app_io_kp_ctrl.c
+ * core_task_console.c
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月30日
  *      Author: JerichoLo
  */
-#include "app_io_kp_ctrl.h"
-#include "fsl_port.h"
-#include "fsl_gpio.h"
-#include "public.h"
+#include "core_task_console.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-
+#define TSKCON_DEFAULT_DELAY_TIME		5 /* unit:ms */
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-static void KPCTRL_PinMux(void);
+static void TSKCON_Init(void);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
+core_task_console_t taskConsoleManage;
 
 /*******************************************************************************
  * Code
  ******************************************************************************/
-static void KPCTRL_PinMux(void)
+static void TSKCON_Init(void)
 {
-	CLOCK_EnableClock(kCLOCK_PortB);
-	PORT_SetPinMux(KP_CTRL_IO_PORT, KP_CTRL_IO_PIN, kPORT_MuxAsGpio);
+	memset(&taskConsoleManage, 0, sizeof(core_task_console_t));
+	taskConsoleManage.taskDelayTime	= TSKCON_DEFAULT_DELAY_TIME;
 }
 
-void KPCTRL_Init(void)
+void TSKCON_Body(void* argument)
 {
-	gpio_pin_config_t pinConfig = {.pinDirection = kGPIO_DigitalOutput, .outputLogic = kio_level_high};
-
-	KPCTRL_PinMux();
-	GPIO_PinInit(KP_CTRL_IO_GPIO, KP_CTRL_IO_PIN, &pinConfig);
-}
-
-void KPCTRL_SetKPState(kp_state_t state)
-{
-	/* KP pin is low active */
-	io_level_t lv = kio_level_high;
-	if(state == kkpstate_on)
+	TSKCON_Init();
+	while(1)
 	{
-		lv = kio_level_low;
+		vTaskDelay(taskConsoleManage.taskDelayTime);
 	}
-	GPIO_PinWrite(KP_CTRL_IO_GPIO, KP_CTRL_IO_PIN, lv);
 }
-

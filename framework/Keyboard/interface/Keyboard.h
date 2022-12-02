@@ -14,13 +14,14 @@
 #define _KEYBOARD_INTERFACE_H_
 
 #include "board.h"
+#include "mask_evb_config.h"
 
 /*
  * Name: gKeyBoardSupported_d
  * Description: Enables/disables the switches based keyboard
  */
 #ifndef gKeyBoardSupported_d
-#define gKeyBoardSupported_d                1
+#define gKeyBoardSupported_d                !MASK_EVB_BUTTON_FN
 #endif
 
 /*

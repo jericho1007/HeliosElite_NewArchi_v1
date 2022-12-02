@@ -9,11 +9,13 @@
 #include "fsl_gpio.h"
 #include "public.h"
 #include "app_lptmr_manage.h"
+#include "driver_wdt.h"
+#include "bike_config.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-#define PWRKEY_MATCH_TIME 	2000 /* unit:ms */
+#define PWRKEY_CHECK_RELEASE_COUNT	1000 /* = 1000 NOP() */
 
 /*******************************************************************************
  * Prototypes
@@ -44,25 +46,40 @@ void PWRKEY_Init(void)
 bool PWRKEY_CheckPwrOn(void)
 {
 	bool isPwrOn = false;
-	int delayCh;
 
-//	LPTMRMANAGE_GetDelayAvailableChannel(&delayCh);	/* find available channel */
-	delayCh = LPTMRMANAGE_SetDelayTime();
-	if(delayCh >= 0)
+	TMRMDL_SetTmrChannelStart(&lptmrManage.watch.ch.powerOnCheck);			/* enable channel */
+	while(GPIO_PinRead(PWR_KEY_IO_GPIO, PWR_KEY_IO_PIN) == kio_level_low) 	/* power key low active(hold) */
 	{
-		lptmrManage.delay.chSet[delayCh].matchCnt = PWRKEY_MATCH_TIME;				/* set delay time */
-		TMRMDL_SetTmrChannelStart(&lptmrManage.delay.chSet[delayCh].state);			/* enable channel */
-		while(GPIO_PinRead(PWR_KEY_IO_GPIO, PWR_KEY_IO_PIN) == kio_level_low &&		/* power key active is low */
-			  !TMR_IsTmrChannelTimeout(&lptmrManage.delay.chSet[delayCh].state))
+		#if SYS_WDT_ENABLE
+			WDT_Feed();	/* WDT feed */
+		#endif
+		if(TMRMDL_IsTmrChannelTimeout(&lptmrManage.watch.ch.powerOnCheck)) 	/* reach goal time or not */
 		{
-			/* WDT feed*/
-		}
-		TMRMDL_SetTmrChannelStop(&lptmrManage.delay.chSet[delayCh].state);			/* disable channel */
-		if(TMR_IsTmrChannelTimeout(&lptmrManage.delay.chSet[delayCh].state))
-		{
+			memset(&lptmrManage.watch.ch.powerOnCheck, 0, sizeof(tmr_model_state_t)); /* clear structure info release for sharing use */
 			isPwrOn = true;
+			break;
 		}
 	}
 
 	return isPwrOn;
+}
+
+void PWRKEY_CheckKeyReleased(void)
+{
+	uint32_t checkedCnt = 0;
+
+	do
+	{
+		if(GPIO_PinRead(PWR_KEY_IO_GPIO, PWR_KEY_IO_PIN) == kio_level_high)	/* power key normal keep high */
+		{
+			checkedCnt++;
+		}
+		else
+		{
+			checkedCnt = 0;
+		}
+		#if SYS_WDT_ENABLE
+			WDT_Feed();	/* WDT feed */
+		#endif
+	}while(checkedCnt < PWRKEY_CHECK_RELEASE_COUNT);
 }

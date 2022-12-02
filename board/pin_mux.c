@@ -42,8 +42,12 @@ pin_labels:
 void BOARD_InitBootPins(void)
 {
     BOARD_InitLPUART();
+#if !MASK_EVB_LED_FN
     BOARD_InitLEDs();
+#endif
+#if !MASK_EVB_BUTTON_FN
     BOARD_InitButtons();
+#endif
 }
 
 /* clang-format off */

@@ -1,32 +1,36 @@
 /*
- * public.h
+ * driver_nvm.h
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月23日
  *      Author: JerichoLo
  */
 
-#ifndef CONSOLE_PUBLIC_H_
-#define CONSOLE_PUBLIC_H_
+#ifndef CONSOLE_MIDDLE_DRIVER_DRIVER_NVM_H_
+#define CONSOLE_MIDDLE_DRIVER_DRIVER_NVM_H_
 #include "stdio.h"
 #include "stdint.h"
 #include "stdbool.h"
 #include "string.h"
-
+#include "fsl_flash.h"
+#include "fsl_ftfx_controller.h"
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-typedef enum io_level {
-	kio_level_low = 0,
-	kio_level_high,
-}io_level_t;
+#define NVM_SECTOR_SIZE		0x800 		/* 2KB */
+#define NVM_VALID_SIZE		0x3000		/* 12KB */
+#define NVM_START_ADDR		0x7C800		/* */
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-void PUBLIC_SwapU32Data(uint8_t *srcData);
+void NVM_Init(void);
+bool NVM_EraseSector(const uint32_t startAddr, uint32_t sectors);
+bool NVM_WriteFlash(uint8_t *srcData, uint32_t startAddr, uint32_t len, bool isSwap);
+void NVM_ReadFlash(uint8_t *destData, uint32_t startAddr, uint32_t len, bool isSwap);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-#endif /* CONSOLE_PUBLIC_H_ */
+
+#endif /* CONSOLE_MIDDLE_DRIVER_DRIVER_NVM_H_ */

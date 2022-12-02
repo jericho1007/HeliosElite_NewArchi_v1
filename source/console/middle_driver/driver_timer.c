@@ -24,8 +24,8 @@
  ******************************************************************************/
 static void TIMER_InitLptmr(void *cb);
 static void TIMER_InitTpmtmr(void *cb);
-void (*LP_TMR_CB)(void);
-void (*TPM_TMR_CB)(void);
+void (*LP_TMR_CB)(void);	/* low power timer call back */
+void (*TPM_TMR_CB)(void);	/* timer/PWM module call back */
 
 /*******************************************************************************
  * Variables
@@ -40,7 +40,7 @@ static void TIMER_InitLptmr(void *cb)
 
 	LPTMR_GetDefaultConfig(&lptmrConfig);			/* Configure LPTMR */
 	LPTMR_Init(CONSOLE_LPTMR_BASE, &lptmrConfig);	/* Initialize the LPTMR */
-	LPTMR_SetTimerPeriod(CONSOLE_LPTMR_BASE, USEC_TO_COUNT(CONSOLE_LPTMR_INTERVAL_TIME, CLOCK_GetFreq(kCLOCK_LpoClk)));	/* Set timer period */
+	LPTMR_SetTimerPeriod(CONSOLE_LPTMR_BASE, MSEC_TO_COUNT(CONSOLE_LPTMR_INTERVAL_TIME, CLOCK_GetFreq(kCLOCK_LpoClk)));	/* Set timer period */
 	LPTMR_EnableInterrupts(CONSOLE_LPTMR_BASE, kLPTMR_TimerInterruptEnable);	/* Enable timer interrupt */
 	EnableIRQ(CONSOLE_LPTMR_IRQ);			/* Enable at the NVIC */
 	LPTMR_StartTimer(CONSOLE_LPTMR_BASE);	/* Start base0 counting */

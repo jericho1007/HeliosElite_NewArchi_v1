@@ -16,6 +16,7 @@
 #include "gpio_pins.h"
 #include "pin_mux.h"
 #include "fsl_os_abstraction.h"
+#include "mask_evb_config.h"
 
 #ifndef BOARD_USE_PWM_FOR_RGB_LED
 #define BOARD_USE_PWM_FOR_RGB_LED 0
@@ -33,7 +34,7 @@
 *******************************************************************************
 ******************************************************************************/
 #if gLedRgbEnabled_d
-#define PWM_MAX_DUTY_CYCLE_c            LED_MAX_RGB_VALUE_c    
+#define PWM_MAX_DUTY_CYCLE_c            LED_MAX_RGB_VALUE_c
 #define PWM_INIT_VAL_c                  0x00U     /* init value */
 #define PWM_FREQ                        190000u  /* 187500u */
 #endif
@@ -123,7 +124,7 @@ static void LED_ColorWheelSet(LED_t LEDNr);
     static void LED_DecrementBlip(void);
     #endif
 #endif
-    
+
 #if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d
 static void LED_DimmingTimeout(void *param);
 static bool_t LED_StartRgbDimming(LED_DimMode_t mode, uint8_t interval);
@@ -215,12 +216,12 @@ void LED_Init
 #if gTMR_Enabled_d
     mLEDTimerID = TMR_AllocateTimer();
 #endif
-    
+
 #if gLedRgbEnabled_d && gRgbLedDimmingEnabled_d && gTMR_Enabled_d
     /* allocate a timer for use in RGB dimming */
     mRGBLedTimerID = TMR_AllocateTimer();
     mRbgDimInfo.ongoing = FALSE;
-    mRbgDimInfo.interval = gRgbLedDimDefaultInterval_c;    
+    mRbgDimInfo.interval = gRgbLedDimDefaultInterval_c;
 #endif /* gLedRgbEnabled_d && gRgbLedDimmingEnabled_d && gTMR_Enabled_d */
 }
 
@@ -240,11 +241,11 @@ void
     /* free the timer used for flashing mode */
     (void)TMR_FreeTimer(mLEDTimerID);
 #endif
-    
-#if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d    
+
+#if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d
     (void)TMR_FreeTimer(mRGBLedTimerID);
 #endif
-    
+
     /* turn off LED */
     LED_TurnOffAllLeds();
 }
@@ -280,7 +281,7 @@ void LED_Operate
             	/*MISRA rule 16.4*/
                 break;
         }
-        
+
         led &= ~(uint8_t)(LED_RGB);
     }
 #endif /* gLedRgbEnabled_d */
@@ -289,7 +290,7 @@ void LED_Operate
     if((bool)(led & LED1))
     {
       LED_GpioSet(ledPins, operation);
-      
+
     }
 #endif
 #if gLEDsOnTargetBoardCnt_c > 1
@@ -323,7 +324,9 @@ void LED_TurnOnLed
     LED_t LEDNr
 )
 {
+#if !MASK_EVB_LED_FN
     LED_Operate(LEDNr, gLedOn_c);  /* turn ON LEDs */
+#endif
 }
 
 /******************************************************************************
@@ -337,7 +340,9 @@ void LED_TurnOffLed
     LED_t LEDNr
 )
 {
+#if !MASK_EVB_LED_FN
     LED_Operate(LEDNr, gLedOff_c);  /* turn OFF LEDs */
+#endif
 }
 
 /******************************************************************************
@@ -351,7 +356,9 @@ void LED_ToggleLed
     LED_t LEDNr
 )
 {
+#if !MASK_EVB_LED_FN
     LED_Operate(LEDNr, gLedToggle_c);  /* toggle LEDs */
+#endif
 }
 
 /******************************************************************************
@@ -365,7 +372,9 @@ void LED_TurnOffAllLeds
 void
 )
 {
+#if !MASK_EVB_LED_FN
     LED_TurnOffLed(LED_ALL);
+#endif
 }
 
 /******************************************************************************
@@ -379,7 +388,9 @@ void LED_TurnOnAllLeds
 void
 )
 {
+#if !MASK_EVB_LED_FN
     LED_TurnOnLed(LED_ALL);
+#endif
 }
 
 /******************************************************************************
@@ -390,7 +401,9 @@ void
 ******************************************************************************/
 void LED_StopFlashingAllLeds(void)
 {
+#if !MASK_EVB_LED_FN
     LED_SetLed(LED_ALL, (uint8_t)gLedOff_c);
+#endif
 }
 
 #if (gLEDBlipEnabled_d) && (!gLedColorWheelEnabled_d || !gLedRgbEnabled_d)
@@ -405,10 +418,11 @@ void LED_StartBlip
     LED_t LEDNr
 )
 {
+#if !MASK_EVB_LED_FN
     uint8_t iLedIndex;
 
     /* set up for blinking one or more LEDs once */
-    for(iLedIndex = 0; iLedIndex < gLEDsOnTargetBoardCnt_c; ++iLedIndex) 
+    for(iLedIndex = 0; iLedIndex < gLEDsOnTargetBoardCnt_c; ++iLedIndex)
     {
         if((bool)(LEDNr & (1u << iLedIndex)))
         {
@@ -418,6 +432,7 @@ void LED_StartBlip
 
     /* start flashing */
     LED_StartFlash(LEDNr);
+#endif
 }
 #endif
 
@@ -432,6 +447,7 @@ void LED_StopFlash
     LED_t LEDNr
 )
 {
+#if !MASK_EVB_LED_FN
     /* leave stopped LEDs in the off state */
     LED_TurnOffLed(LEDNr);
 
@@ -444,6 +460,7 @@ void LED_StopFlash
     {
         (void)TMR_StopTimer(mLEDTimerID);
     }
+#endif
 #endif
 }
 
@@ -458,8 +475,10 @@ void LED_SetHex
 uint8_t hexValue
 )
 {
+#if !MASK_EVB_LED_FN
     LED_SetLed(LED_ALL, (uint8_t)gLedOff_c);
     LED_SetLed(hexValue, (uint8_t)gLedOn_c);
+#endif
 }
 /******************************************************************************
 * Name: LED_SetLed
@@ -475,6 +494,7 @@ void LED_SetLed
     LedState_t state
 )
 {
+#if !MASK_EVB_LED_FN
     /* turning off flashing same as off state */
     if(state == (uint8_t)gLedStopFlashing_c)
     {
@@ -486,8 +506,8 @@ void LED_SetLed
     {
         gColorWheelIdx = 0x00;
     }
-    #endif   
-    
+    #endif
+
     /* turn off serial lights if in serial mode */
     LED_StopSerialFlash();
 
@@ -524,6 +544,7 @@ void LED_SetLed
              LED_ToggleLed(LEDNr);
         }
     }
+#endif
 }
 
 /******************************************************************************
@@ -543,13 +564,14 @@ void LED_SetRgbLed
     uint16_t blueValue
 )
 {
+#if !MASK_EVB_LED_FN
 #if gLedRgbEnabled_d
    if(LEDNr == LED_RGB)
    {
         /* max value = PWM_MAX_DUTY_CYCLE_c */
         if((redValue <= PWM_MAX_DUTY_CYCLE_c) &&
            (greenValue <= PWM_MAX_DUTY_CYCLE_c) &&
-           (blueValue <= PWM_MAX_DUTY_CYCLE_c)) 
+           (blueValue <= PWM_MAX_DUTY_CYCLE_c))
         {
             /* keep last values */
             if((bool)redValue || (bool)greenValue || (bool)blueValue)
@@ -568,7 +590,7 @@ void LED_SetRgbLed
             /* set color */
             RGB_SET_LED_RED(redValue);
             RGB_SET_LED_GREEN(greenValue);
-            RGB_SET_LED_BLUE(blueValue);          
+            RGB_SET_LED_BLUE(blueValue);
         }
    }
 #else
@@ -577,37 +599,42 @@ void LED_SetRgbLed
    greenValue=greenValue;
    blueValue=blueValue;
 #endif
+#endif
 }
 
 /******************************************************************************
 * Name: LED_RgbDimOut
 * Description: Dim out the RGB LED
-* Param(s): None    
+* Param(s): None
 * Return: TRUE if no dimming is ongoing and the command has been accepted,
 *         FALSE otherwise
 ******************************************************************************/
 bool_t LED_RgbDimOut(void)
 {
-#if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d  
+#if !MASK_EVB_LED_FN
+#if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d
   return LED_StartRgbDimming(gLedDimOut_c, mRbgDimInfo.interval);
 #else
   return FALSE;
+#endif
 #endif
 }
 
 /******************************************************************************
 * Name: LED_RgbDimIn
 * Description: Dim in the RGB LED
-* Param(s): None    
+* Param(s): None
 * Return: TRUE if no dimming is ongoing and the command has been accepted,
 *         FALSE otherwise
 ******************************************************************************/
 bool_t LED_RgbDimIn(void)
 {
+#if !MASK_EVB_LED_FN
 #if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d
   return LED_StartRgbDimming(gLedDimIn_c, mRbgDimInfo.interval);
 #else
-  return FALSE;  
+  return FALSE;
+#endif
 #endif
 }
 
@@ -619,14 +646,16 @@ bool_t LED_RgbDimIn(void)
 ******************************************************************************/
 void LED_RgbSetDimInterval(uint8_t dim_interval)
 {
-#if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d  
+#if !MASK_EVB_LED_FN
+#if gTMR_Enabled_d && gLedRgbEnabled_d && gRgbLedDimmingEnabled_d
     if(dim_interval <= gRgbLedDimMaxInterval_c)
     {
         mRbgDimInfo.interval = dim_interval;
-    }    
+    }
 #else
     (void)dim_interval;
-#endif  
+#endif
+#endif
 }
 
  /******************************************************************************
@@ -642,6 +671,7 @@ void LED_StartFlashWithPeriod
     uint16_t periodMs
 )
 {
+#if !MASK_EVB_LED_FN
     /* indicate which LEDs are flashing */
     mLedFlashingLEDs |= LEDNr;
 
@@ -653,6 +683,7 @@ void LED_StartFlashWithPeriod
     }
 #else
     #warning "The TIMER component is not enabled and therefore the LED flashing function is disabled"
+#endif
 #endif
 }
 /******************************************************************************
@@ -668,6 +699,7 @@ void LED_StartSerialFlashWithPeriod
     uint16_t periodMs
 )
 {
+#if !MASK_EVB_LED_FN
     /* indicate going into flashing mode (must be done first) */
     LED_StartFlashWithPeriod(ledStartPosition, periodMs);
 
@@ -691,6 +723,7 @@ void LED_StartSerialFlashWithPeriod
 
     /* indicate in serial flash mode */
     mfLedInSerialMode = TRUE;
+#endif
 }
 /******************************************************************************
 * Name: LED_StopSerialFlash
@@ -704,6 +737,7 @@ void LED_StopSerialFlash
     void
 )
 {
+#if !MASK_EVB_LED_FN
     if(mfLedInSerialMode)
     {
         /* stop flashing timer */
@@ -718,6 +752,7 @@ void LED_StopSerialFlash
 
         mLedStartFlashingPosition = LED1;
     }
+#endif
 }
 /******************************************************************************
 * Name: LED_StartColorWheel
@@ -732,6 +767,7 @@ void LED_StartColorWheel
     uint16_t periodMs
 )
 {
+#if !MASK_EVB_LED_FN
 #if gLedColorWheelEnabled_d && gLedRgbEnabled_d
     LED_ColorWheelSet(LEDNr);
     LED_StartFlashWithPeriod(LEDNr, periodMs);
@@ -739,7 +775,7 @@ void LED_StartColorWheel
     LEDNr=LEDNr;
     periodMs=periodMs;
 #endif
-
+#endif
 }
 /******************************************************************************
 *******************************************************************************
@@ -760,6 +796,7 @@ static void LED_GpioSet
     LED_OpMode_t operation
 )
 {
+#if !MASK_EVB_LED_FN
     switch(operation)
     {
         case gLedOn_c:
@@ -783,6 +820,7 @@ static void LED_GpioSet
         	/*MISRA rule 16.4*/
             break;
     }
+#endif
 }
 
 
@@ -860,9 +898,9 @@ static void LED_ToggleRgbLed
 static void LED_RgbLedInit(void)
 {
 #if BOARD_USE_PWM_FOR_RGB_LED && !(defined(gLpmIncluded_d)&&(gLpmIncluded_d > 0))
-  
+
     tmr_adapter_pwm_param_t pwm_config;
-    
+
     /* Ungate PWM module */
     PWM_Init(gRedLedPwmTimerInstance_c);
     PWM_Init(gGreenLedPwmTimerInstance_c);
@@ -892,6 +930,7 @@ static void LED_RgbLedInit(void)
 ******************************************************************************/
 static void LED_DecrementBlip(void)
 {
+#if !MASK_EVB_LED_FN
     uint8_t iLedIndex;
 
     for(iLedIndex = 0; iLedIndex < gLEDsOnTargetBoardCnt_c; ++iLedIndex)
@@ -911,6 +950,7 @@ static void LED_DecrementBlip(void)
     {
         (void)TMR_StopTimer(mLEDTimerID);
     }
+#endif
 }
 #endif
 
@@ -927,6 +967,7 @@ static void LED_FlashTimeout
     void *param
 )
 {
+#if !MASK_EVB_LED_FN
 #if gLedColorWheelEnabled_d && gLedRgbEnabled_d
     if(!(bool)gColorWheelIdx)
     {
@@ -956,6 +997,7 @@ static void LED_FlashTimeout
             mLedFlashingLEDs |= mLedStartFlashingPosition;
         }
     }
+#endif
 }
 
 #if gLedColorWheelEnabled_d && gLedRgbEnabled_d
@@ -982,7 +1024,7 @@ static void LED_ColorWheelSet( LED_t LEDNr)
 #if gLedRgbEnabled_d && gRgbLedDimmingEnabled_d
 /******************************************************************************
 * Name: LED_DimmingTimeout
-* Description: Callback function of the interval timer used by the RGB LED 
+* Description: Callback function of the interval timer used by the RGB LED
 *              dimmer. It increases/decreases the RGB values accordingly
 *              to dimming information stored in mRbgDimInfo.
 * Param(s): [in]    tmrId - timer ID
@@ -994,27 +1036,27 @@ static void LED_DimmingTimeout(void *param)
   uint16_t greenValue = 0;
   uint16_t blueValue = 0;
 
-  if(gLedDimOut_c == mRbgDimInfo.mode) 
-  {     
+  if(gLedDimOut_c == mRbgDimInfo.mode)
+  {
       redValue = mRbgDimInfo.value[0] - mRbgDimInfo.increment[0];
       greenValue = mRbgDimInfo.value[1] - mRbgDimInfo.increment[1];
       blueValue = mRbgDimInfo.value[2] - mRbgDimInfo.increment[2];
 
   }
-  
+
   if(gLedDimIn_c == mRbgDimInfo.mode)
-  {    
+  {
       redValue = mRbgDimInfo.value[0] + mRbgDimInfo.increment[0];
       greenValue = mRbgDimInfo.value[1] + mRbgDimInfo.increment[1];
       blueValue = mRbgDimInfo.value[2] + mRbgDimInfo.increment[2];
   }
-    
+
   if(--mRbgDimInfo.steps == 0u)
   {
     if(gLedDimOut_c == mRbgDimInfo.mode)
     {
-     /* Turn off the RGB LED (due to potential residual value over PWM channel, 
-      * if the initial value is not an integer multiple of dimming steps) 
+     /* Turn off the RGB LED (due to potential residual value over PWM channel,
+      * if the initial value is not an integer multiple of dimming steps)
       */
       LED_GpioSet((const gpioOutputPinConfig_t*)&ledPins[gRedLedIdx_c], gLedOff_c);
       LED_GpioSet((const gpioOutputPinConfig_t*)&ledPins[gGreenLedIdx_c], gLedOff_c);
@@ -1022,17 +1064,17 @@ static void LED_DimmingTimeout(void *param)
     }
     else
     {
-      /* Set RGB LED to last values (due to potential residual value over PWM channel, 
-      * if the initial value is not an integer multiple of dimming steps) 
+      /* Set RGB LED to last values (due to potential residual value over PWM channel,
+      * if the initial value is not an integer multiple of dimming steps)
       */
-      RGB_SET_LED_RED(mLedRgbLastValues[0]); 
+      RGB_SET_LED_RED(mLedRgbLastValues[0]);
       RGB_SET_LED_GREEN(mLedRgbLastValues[1]);
       RGB_SET_LED_BLUE(mLedRgbLastValues[2]);
     }
-    
+
     /* Stop the timer */
     (void)TMR_StopTimer(mRGBLedTimerID);
-    
+
     /* Clear the ongoing flag */
     OSA_InterruptDisable();
     mRbgDimInfo.ongoing = FALSE;
@@ -1041,13 +1083,13 @@ static void LED_DimmingTimeout(void *param)
   else
   {
     /* store the current RGB LED color */
-    mRbgDimInfo.value[0] = redValue; 
-    mRbgDimInfo.value[1] = greenValue; 
+    mRbgDimInfo.value[0] = redValue;
+    mRbgDimInfo.value[1] = greenValue;
     mRbgDimInfo.value[2] = blueValue;
-    
+
     /* set the current RGB LED color */
-    RGB_SET_LED_RED(redValue); 
-    RGB_SET_LED_GREEN(greenValue); 
+    RGB_SET_LED_RED(redValue);
+    RGB_SET_LED_GREEN(greenValue);
     RGB_SET_LED_BLUE(blueValue);
   }
 }
@@ -1064,7 +1106,7 @@ static bool_t LED_StartRgbDimming(LED_DimMode_t mode, uint8_t interval)
 {
   assert(mode <= gLedDimOut_c);
   bool_t status;
-  
+
   /*In this case, increment is 0, it's no meaning to run*/
   if(!(bool)mLedRgbLastValues[0]&&!(bool)mLedRgbLastValues[1]&&!(bool)mLedRgbLastValues[2])
   {
@@ -1077,7 +1119,7 @@ static bool_t LED_StartRgbDimming(LED_DimMode_t mode, uint8_t interval)
       {
           mRbgDimInfo.ongoing = TRUE;
           OSA_InterruptEnable();
-          
+
           /* populate dimming info structure */
           mRbgDimInfo.interval = interval;
           mRbgDimInfo.mode = mode;
@@ -1097,18 +1139,18 @@ static bool_t LED_StartRgbDimming(LED_DimMode_t mode, uint8_t interval)
           mRbgDimInfo.steps /= 3u; /* adjust the steps number taking into account processing overhead */
           mRbgDimInfo.increment[0] = mLedRgbLastValues[0]/mRbgDimInfo.steps;
           mRbgDimInfo.increment[1] = mLedRgbLastValues[1]/mRbgDimInfo.steps;
-          mRbgDimInfo.increment[2] = mLedRgbLastValues[2]/mRbgDimInfo.steps;  
+          mRbgDimInfo.increment[2] = mLedRgbLastValues[2]/mRbgDimInfo.steps;
 
           /* start the timer used for dimming */
           (void)TMR_StartIntervalTimer(mRGBLedTimerID, gRgbLedDimTimerTimeout_c, (pfTmrCallBack_t)LED_DimmingTimeout, NULL);
-          
-          status = TRUE;              
+
+          status = TRUE;
       }
       else  /*In this case, dimming is onoging*/
       {
         OSA_InterruptEnable();
         status = FALSE;
-      } 
+      }
   }
   return status;
 }
@@ -1117,28 +1159,32 @@ static bool_t LED_StartRgbDimming(LED_DimMode_t mode, uint8_t interval)
 /******************************************************************************
 * Name: LED_HwInit
 * Description: Initialize the LED hardware module
-*              
+*
 * Param(s): -
 * Return: -
 ******************************************************************************/
 static void LED_HwInit(void)
 {
+#if !MASK_EVB_LED_FN
     BOARD_InitLEDs();
     (void)GpioOutputPinInit(ledPins, gLEDsOnTargetBoardCnt_c);
 #if (defined(gLedRgbEnabled_d) && (gLedRgbEnabled_d > 0U))
     LED_RgbLedInit();
-#endif 
+#endif
+#endif
 }
 
 /******************************************************************************
 * Name: LED_ExitLowPower
 * Description: Led Exit low power mode.
-*              
+*
 * Param(s): -
 * Return: -
 ******************************************************************************/
 void LED_ExitLowPower(void)
 {
+#if !MASK_EVB_LED_FN
     LED_HwInit();
+#endif
 }
 #endif /* defined(gLEDSupported_d) && (gLEDSupported_d > 0U) */

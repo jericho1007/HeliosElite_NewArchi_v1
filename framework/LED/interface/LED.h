@@ -15,9 +15,10 @@
 
 #include "EmbeddedTypes.h"
 #include "board.h"
+#include "mask_evb_config.h"
 
 #ifndef gLEDSupported_d
-#define gLEDSupported_d                 1U
+#define gLEDSupported_d                ! MASK_EVB_LED_FN
 #endif
 
 #if (defined(gLEDSupported_d) && (gLEDSupported_d > 0U))

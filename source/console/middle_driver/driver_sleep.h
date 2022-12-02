@@ -1,32 +1,35 @@
 /*
- * public.h
+ * driver_sleep.h
  *
- *  Created on: 2022年11月7日
+ *  Created on: 2022年11月30日
  *      Author: JerichoLo
  */
 
-#ifndef CONSOLE_PUBLIC_H_
-#define CONSOLE_PUBLIC_H_
+#ifndef CONSOLE_MIDDLE_DRIVER_DRIVER_SLEEP_H_
+#define CONSOLE_MIDDLE_DRIVER_DRIVER_SLEEP_H_
 #include "stdio.h"
 #include "stdint.h"
 #include "stdbool.h"
 #include "string.h"
+#include "fsl_power.h"
 
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
-typedef enum io_level {
-	kio_level_low = 0,
-	kio_level_high,
-}io_level_t;
+#define SLEEP_MCG_IRCLK_DISABLE                                 0U  /*!< MCGIRCLK disabled */
+#define SLEEP_SIM_OSC32KSEL_OSC32KCLK_CLK                       0U  /*!< OSC32KSEL select: OSC32KCLK clock */
+#define SLEEP_WAKE_UP_PORT	PORTC
+#define SLEEP_WAKE_UP_GPIO	GPIOC
+#define SLEEP_WAKE_UP_PIN	2
 
 /*******************************************************************************
  * Prototypes
  ******************************************************************************/
-void PUBLIC_SwapU32Data(uint8_t *srcData);
+void SLEEP_Init(void);
+void SLEEP_EnterPowerDnMode(power_mode_t mode);
 
 /*******************************************************************************
  * Variables
  ******************************************************************************/
 
-#endif /* CONSOLE_PUBLIC_H_ */
+#endif /* CONSOLE_MIDDLE_DRIVER_DRIVER_SLEEP_H_ */

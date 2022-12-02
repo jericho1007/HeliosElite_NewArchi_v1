@@ -33,8 +33,8 @@ typedef struct _tmr_model_delay {
 void TMRMDL_SetTmrChannelStart(tmr_model_state_t *ch);
 void TMRMDL_SetTmrChannelStop(tmr_model_state_t *ch);
 bool TMRMDL_IsTmrChannelStart(tmr_model_state_t *ch);
-bool TMR_IsTmrChannelTimeout(tmr_model_state_t *ch);
-void TMR_SetTmrChannelTimeout(tmr_model_state_t *ch);
-void TMR_ClearTmrChannelTimeout(tmr_model_state_t *ch);
+bool TMRMDL_IsTmrChannelTimeout(tmr_model_state_t *ch);
+void TMRMDL_SetTmrChannelTimeout(tmr_model_state_t *ch);
+void TMRMDL_ClearTmrChannelTimeout(tmr_model_state_t *ch);
 
 #endif /* CONSOLE_MIDDLE_APP_APP_TIMER_MODEL_H_ */

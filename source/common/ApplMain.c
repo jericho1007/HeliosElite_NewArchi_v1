@@ -75,6 +75,7 @@
 #include "fsci_ble_gatt.h"
 #include "fsci_ble_l2cap_cb.h"
 #endif
+#include "mask_evb_config.h"
 
 /************************************************************************************
 *************************************************************************************
@@ -391,7 +392,7 @@ extern void RCO32K_Calibrate(void);
 * \param[in]  param
 *
 ********************************************************************************** */
-void main_task(uint32_t param)
+void TASKBLE_CoreBody(uint32_t param)
 {
     static bool_t platformInitialized = FALSE;
 
@@ -438,7 +439,9 @@ void main_task(uint32_t param)
         (void)RNG_Init();
         RNG_SetPseudoRandomNoSeed(NULL);
 #endif /* MULTICORE_APPLICATION_CORE */
+#if !MASK_EVB_LED_FN
         LED_Init();
+#endif
 #if gKeyBoardSupported_d && (gKBD_KeysCount_c > 0)
         KBD_Init(App_KeyboardCallBack);
 #endif
@@ -466,10 +469,12 @@ void main_task(uint32_t param)
         PWR_Init();
         PWR_DisallowDeviceToSleep();
 #else
+#if !MASK_EVB_LED_FN
         Led1Flashing();
         Led2Flashing();
         Led3Flashing();
         Led4Flashing();
+#endif
 #endif
 
         /* Initialize peripheral drivers specific to the application */
